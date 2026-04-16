@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Film Foundation Trust — Redefining Cinema</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Cormorant+Garant:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root {
+      --bg0:#020510;--bg1:#060b1e;--bg2:#0a1028;--bg3:#0e1535;
+      --gold:#c8a84b;--gold2:#e2c97e;--gold3:#f5e4a6;--golda:rgba(200,168,75,.18);
+      --ruby:#8b1a2e;--ruby2:#c0304d;
+      --cream:#f5ead6;--dim:rgba(245,234,214,.55);--dim2:rgba(245,234,214,.35);
+      --glass:rgba(10,16,40,.72);--gb:rgba(200,168,75,.22);
+      --fd:'Cinzel',serif;--fDeco:'Cinzel Decorative',serif;--fs:'Cormorant Garant',serif;--fb:'Inter',sans-serif;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg0);color:var(--cream);font-family:var(--fb);overflow-x:hidden;}
+    ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg0);}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;}
+    #nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 48px;height:68px;display:flex;align-items:center;justify-content:space-between;transition:all .4s;border-bottom:1px solid transparent;}
+    #nav.scrolled{background:rgba(2,5,16,.93);backdrop-filter:blur(18px);border-bottom-color:var(--gb);}
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .nav-logo img{height:36px;width:auto;}
+    .nav-logo-text{font-family:var(--fd);font-size:.64rem;letter-spacing:.22em;color:var(--gold2);text-transform:uppercase;line-height:1.35;}
+    .nav-links{display:flex;gap:30px;}
+    .nav-links a{font-family:var(--fd);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .25s;position:relative;}
+    .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+    .nav-links a:hover{color:var(--gold2);}
+    .nav-links a:hover::after{transform:scaleX(1);}
+    .nav-cta{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg0)!important;padding:7px 20px;font-weight:600!important;transition:box-shadow .3s,transform .2s!important;}
+    .nav-cta:hover{box-shadow:0 4px 20px rgba(200,168,75,.5);transform:translateY(-1px);}
+    .nav-cta::after{display:none!important;}
+    @media(max-width:700px){.nav-links{display:none;}#nav{padding:0 20px;}}
+    #hero{position:relative;height:100vh;min-height:700px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+    #three-canvas{position:absolute;inset:0;z-index:0;}
+    .hero-overlay{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 70% 55% at 50% 40%,rgba(14,21,53,.15),rgba(2,5,16,.82) 100%),linear-gradient(to bottom,rgba(2,5,16,0) 50%,rgba(2,5,16,1) 100%);}
+    .hero-content{position:relative;z-index:2;text-align:center;max-width:900px;padding:0 24px;}
+    .hero-eyebrow{font-family:var(--fd);font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;opacity:0;animation:hfu .8s .2s forwards ease;}
+    .hero-logo-wrap{display:inline-block;margin-bottom:28px;filter:drop-shadow(0 0 36px rgba(200,168,75,.55)) drop-shadow(0 0 80px rgba(200,168,75,.2));opacity:0;animation:hfu 1s .4s forwards ease;}
+    .hero-logo{width:clamp(190px,28vw,320px);height:auto;display:block;}
+    .hero-title{font-family:var(--fDeco);font-size:clamp(1.9rem,4.8vw,3.6rem);font-weight:700;background:linear-gradient(135deg,var(--gold3),var(--gold2) 50%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.05em;line-height:1.18;opacity:0;animation:hfu .9s .6s forwards ease;}
+    .hero-hindi{font-family:var(--fs);font-size:clamp(.88rem,1.9vw,1.15rem);font-style:italic;font-weight:300;color:var(--dim);margin-top:9px;opacity:0;animation:hfu .8s .78s forwards ease;}
+    .hero-div{display:flex;align-items:center;justify-content:center;gap:14px;margin:20px auto;opacity:0;animation:hfu .8s .92s forwards ease;}
+    .hero-div-line{flex:1;max-width:90px;height:1px;background:linear-gradient(90deg,transparent,var(--gold));}
+    .hero-div-line.r{background:linear-gradient(90deg,var(--gold),transparent);}
+    .hero-div-txt{font-family:var(--fd);font-size:.62rem;letter-spacing:.28em;color:var(--gold2);text-transform:uppercase;}
+    .hero-sub{font-size:.76rem;color:var(--dim2);letter-spacing:.1em;opacity:0;animation:hfu .8s 1.05s forwards ease;}
+    .hero-btns{margin-top:34px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;opacity:0;animation:hfu .8s 1.2s forwards ease;}
+    .scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:7px;opacity:0;animation:hfu .8s 1.5s forwards ease;}
+    .scroll-hint span{font-family:var(--fd);font-size:.52rem;letter-spacing:.2em;color:var(--dim2);text-transform:uppercase;}
+    .scroll-mouse{width:20px;height:34px;border:1px solid var(--gold);border-radius:10px;position:relative;}
+    .scroll-mouse::after{content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);width:3px;height:6px;background:var(--gold);border-radius:2px;animation:sd 1.8s infinite;}
+    @keyframes sd{0%{opacity:1;top:5px}80%{opacity:0;top:18px}100%{opacity:0;top:5px}}
+    @keyframes hfu{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+    .btn-gold{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg0);padding:13px 32px;font-family:var(--fd);font-size:.7rem;letter-spacing:.16em;font-weight:600;text-decoration:none;text-transform:uppercase;cursor:pointer;border:none;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:box-shadow .3s,transform .25s;}
+    .btn-gold:hover{box-shadow:0 6px 28px rgba(200,168,75,.55);transform:translateY(-2px);}
+    .btn-outline{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--gold2);padding:12px 32px;font-family:var(--fd);font-size:.7rem;letter-spacing:.16em;text-decoration:none;text-transform:uppercase;border:1px solid var(--gold);transition:background .3s,box-shadow .3s;}
+    .btn-outline:hover{background:rgba(200,168,75,.1);box-shadow:0 0 20px rgba(200,168,75,.18);}
+    .film-divider{height:44px;background:#030714;display:flex;align-items:center;overflow:hidden;border-top:2px solid #0e1535;border-bottom:2px solid #0e1535;}
+    .film-cell{flex-shrink:0;width:54px;height:44px;border-right:2px solid #0e1535;display:flex;align-items:center;justify-content:center;}
+    .film-hole{width:26px;height:18px;border-radius:3px;background:#010309;border:1.5px solid #1a2260;}
+    section{padding:96px 24px;position:relative;}
+    .container{max-width:1080px;margin:0 auto;}
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .rd1{transition-delay:.1s;}.rd2{transition-delay:.22s;}.rd3{transition-delay:.34s;}.rd4{transition-delay:.48s;}.rd5{transition-delay:.62s;}
+    .sec-eye{font-family:var(--fd);font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:9px;display:flex;align-items:center;gap:10px;}
+    .sec-eye::before{content:'';display:block;width:28px;height:1px;background:var(--gold);}
+    .sec-title{font-family:var(--fs);font-size:clamp(1.9rem,4.3vw,3rem);font-weight:600;line-height:1.18;color:var(--gold3);margin-bottom:12px;}
+    .sec-lead{font-size:1.06rem;line-height:1.86;color:var(--dim);max-width:640px;}
+    .gold-accent{display:inline-block;width:46px;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold2));margin:14px 0 26px;}
+    #vision{background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+    .vision-grid{display:grid;grid-template-columns:1fr 1fr;gap:68px;align-items:center;}
+    @media(max-width:768px){.vision-grid{grid-template-columns:1fr;gap:36px;}}
+    .vq-wrap{position:relative;padding:38px;border:1px solid var(--gb);background:var(--glass);backdrop-filter:blur(12px);}
+    .vq-wrap::before{content:'"';font-family:var(--fs);font-size:8rem;line-height:.7;color:var(--golda);position:absolute;top:14px;left:18px;pointer-events:none;}
+    .vq{font-family:var(--fs);font-size:clamp(1.05rem,2.1vw,1.45rem);font-style:italic;font-weight:300;color:var(--gold3);line-height:1.65;position:relative;z-index:1;}
+    .vq-attr{margin-top:16px;font-size:.76rem;color:var(--dim2);position:relative;z-index:1;}
+    .corner-tr{position:absolute;top:0;right:0;width:28px;height:28px;border-top:2px solid var(--gold);border-right:2px solid var(--gold);}
+    .corner-bl{position:absolute;bottom:0;left:0;width:28px;height:28px;border-bottom:2px solid var(--gold);border-left:2px solid var(--gold);}
+    #objects{background:var(--bg0);}
+    .obj-bg{position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 72% 50%,rgba(200,168,75,.05),transparent 70%);}
+    .pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:48px;}
+    @media(max-width:900px){.pillars-grid{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:560px){.pillars-grid{grid-template-columns:1fr;}}
+    .pillar{background:var(--bg1);padding:38px 28px;position:relative;overflow:hidden;transition:background .35s;cursor:default;}
+    .pillar::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,168,75,.12),transparent 60%);opacity:0;transition:opacity .35s;}
+    .pillar:hover{background:var(--bg2);}.pillar:hover::after{opacity:1;}
+    .pillar-n{font-family:var(--fDeco);font-size:3.8rem;font-weight:900;color:rgba(200,168,75,.065);position:absolute;top:12px;right:16px;line-height:1;}
+    .pillar-icon{font-size:2.1rem;margin-bottom:16px;display:block;}
+    .pillar-name{font-family:var(--fd);font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);margin-bottom:10px;}
+    .pillar-text{font-size:.88rem;line-height:1.76;color:var(--dim);}
+    .pillar-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);transform:scaleX(0);transform-origin:left;transition:transform .4s;}
+    .pillar:hover .pillar-bar{transform:scaleX(1);}
+    #stats{padding:0;background:linear-gradient(90deg,#0a0f28,#0e1840 50%,#0a0f28);border-top:1px solid var(--gb);border-bottom:1px solid var(--gb);}
+    .stats-row{display:flex;flex-wrap:wrap;}
+    .stat-item{flex:1;min-width:150px;padding:42px 28px;text-align:center;border-right:1px solid var(--gb);position:relative;overflow:hidden;}
+    .stat-item:last-child{border-right:none;}
+    .stat-item::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:2px;background:var(--gold);transition:width .4s;}
+    .stat-item:hover::before{width:75%;}
+    .stat-n{font-family:var(--fDeco);font-size:2.4rem;font-weight:900;background:linear-gradient(135deg,var(--gold3),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .stat-l{font-family:var(--fd);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim2);margin-top:7px;}
+    #workshop{background:var(--bg1);overflow:hidden;}
+    .ws-bg{position:absolute;inset:0;background:radial-gradient(ellipse 40% 50% at 90% 20%,rgba(139,26,46,.18),transparent 60%),radial-gradient(ellipse 50% 60% at 10% 80%,rgba(14,21,53,.6),transparent 70%);}
+    .ws-badge{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--ruby),var(--ruby2));color:white;padding:5px 16px;font-family:var(--fd);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:16px;}
+    .ws-badge::before{content:'●';font-size:.46rem;animation:blink 1.4s infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+    .ws-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;}
+    @media(max-width:768px){.ws-grid{grid-template-columns:1fr;}}
+    .ws-info{display:flex;flex-direction:column;gap:14px;margin-top:26px;}
+    .ws-ii{display:flex;gap:14px;align-items:flex-start;padding:14px;border-left:2px solid var(--golda);background:rgba(14,21,53,.4);}
+    .ws-ii-icon{font-size:1.2rem;flex-shrink:0;margin-top:2px;}
+    .ws-ii-label{font-family:var(--fd);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+    .ws-ii-val{font-size:.92rem;color:var(--cream);}
+    .day-list{display:flex;flex-direction:column;gap:0;}
+    .day-item{display:flex;gap:0;opacity:0;transform:translateX(18px);transition:opacity .6s,transform .6s;}
+    .day-item.visible{opacity:1;transform:translateX(0);}
+    .day-item:nth-child(2){transition-delay:.15s;}.day-item:nth-child(3){transition-delay:.3s;}
+    .day-spine{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:40px;padding-top:5px;}
+    .day-dot{width:13px;height:13px;border-radius:50%;background:var(--gold);border:3px solid var(--bg1);flex-shrink:0;}
+    .day-line{flex:1;width:2px;background:linear-gradient(to bottom,var(--gold),rgba(200,168,75,.08));min-height:36px;}
+    .day-body{padding:4px 0 28px 8px;}
+    .day-label{font-family:var(--fd);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+    .day-title{font-family:var(--fs);font-size:1.1rem;font-weight:600;color:var(--gold3);margin-bottom:5px;}
+    .day-desc{font-size:.86rem;line-height:1.72;color:var(--dim);}
+    #team{background:var(--bg0);}
+    .team-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 30% 60%,rgba(14,21,53,.6),transparent 70%);}
+    .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:48px;}
+    @media(max-width:900px){.team-grid{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:540px){.team-grid{grid-template-columns:1fr;}}
+    .member{background:var(--bg1);padding:30px 22px;position:relative;overflow:hidden;transition:background .35s,transform .35s;}
+    .member:hover{background:var(--bg2);transform:translateY(-3px);}
+    .m-shine{position:absolute;top:-70px;right:-70px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(200,168,75,.1),transparent 70%);pointer-events:none;}
+    .m-init{width:48px;height:48px;background:linear-gradient(135deg,var(--gold),#8b6914);border-radius:50%;margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-family:var(--fDeco);font-size:1.1rem;font-weight:900;color:var(--bg0);}
+    .m-name{font-family:var(--fs);font-size:1.06rem;font-weight:600;color:var(--gold3);margin-bottom:3px;}
+    .m-role{font-family:var(--fd);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+    .m-bio{font-size:.84rem;line-height:1.7;color:var(--dim);}
+    .m-phone{margin-top:12px;font-size:.76rem;color:var(--dim2);}
+    .m-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--ruby2),transparent);transform:scaleX(0);transform-origin:left;transition:transform .45s;}
+    .member:hover .m-bar{transform:scaleX(1);}
+    #contact{background:linear-gradient(180deg,var(--bg1),var(--bg0));}
+    .contact-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:60px;}
+    @media(max-width:768px){.contact-grid{grid-template-columns:1fr;gap:36px;}}
+    .ci-list{display:flex;flex-direction:column;}
+    .ci{display:flex;gap:16px;align-items:flex-start;padding:18px 0;border-bottom:1px solid rgba(200,168,75,.1);}
+    .ci:first-child{border-top:1px solid rgba(200,168,75,.1);}
+    .ci-icon{width:38px;height:38px;flex-shrink:0;background:rgba(200,168,75,.1);border:1px solid var(--golda);display:flex;align-items:center;justify-content:center;font-size:1rem;}
+    .ci-label{font-family:var(--fd);font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+    .ci-val{font-size:.9rem;color:var(--cream);line-height:1.55;}
+    .cf-wrap{background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(16px);padding:40px 34px;position:relative;}
+    .cf-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--ruby2),var(--gold));}
+    .cf-title{font-family:var(--fs);font-size:1.55rem;font-weight:600;color:var(--gold3);margin-bottom:26px;}
+    .cf-row{display:flex;flex-direction:column;gap:12px;}
+    .cf-input{background:rgba(14,21,53,.65);border:1px solid rgba(200,168,75,.2);color:var(--cream);padding:12px 15px;font-family:var(--fb);font-size:.9rem;width:100%;transition:border-color .25s,box-shadow .25s;outline:none;}
+    .cf-input:focus{border-color:var(--gold);box-shadow:0 0 14px rgba(200,168,75,.14);}
+    .cf-input::placeholder{color:var(--dim2);}
+    textarea.cf-input{resize:vertical;min-height:100px;}
+    footer{background:var(--bg0);border-top:1px solid var(--gb);text-align:center;padding:38px 24px;}
+    .fl-wrap{display:inline-block;margin-bottom:14px;filter:drop-shadow(0 0 14px rgba(200,168,75,.28));}
+    .fl-wrap img{width:110px;height:auto;}
+    .f-name{font-family:var(--fd);font-size:.7rem;letter-spacing:.22em;color:var(--gold);margin-bottom:5px;}
+    .f-sub{font-size:.72rem;color:var(--dim2);}
+    .f-line{width:100%;height:1px;margin:22px 0;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+    .f-copy{font-size:.7rem;color:rgba(245,234,214,.18);}
+    .grain{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.026;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  </style>
+</head>
+<body>
+<div class="grain"></div>
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img src="assets/logo.jpg" alt="TFFT"/>
+    <span class="nav-logo-text">The Film<br/>Foundation Trust</span>
+  </a>
+  <div class="nav-links">
+    <a href="#vision">Vision</a>
+    <a href="#objects">Our Work</a>
+    <a href="#workshop">Workshop</a>
+    <a href="#team">Team</a>
+    <a href="#contact" class="nav-cta">Contact</a>
+  </div>
+</nav>
+<section id="hero">
+  <canvas id="three-canvas"></canvas>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Public Charitable Trust &nbsp;·&nbsp; Est. September 2022 &nbsp;·&nbsp; New Delhi, India</p>
+    <div class="hero-logo-wrap">
+      <img class="hero-logo" src="assets/logo.jpg" alt="The Film Foundation Trust"/>
+    </div>
+    <h1 class="hero-title">The Film Foundation Trust</h1>
+    <p class="hero-hindi">द फिल्म फाउंडेशन ट्रस्ट &nbsp;·&nbsp; TFFT</p>
+    <div class="hero-div">
+      <div class="hero-div-line"></div>
+      <span class="hero-div-txt">✦ &nbsp;Redefining Cinema&nbsp; ✦</span>
+      <div class="hero-div-line r"></div>
+    </div>
+    <p class="hero-sub">Indian Culture &nbsp;·&nbsp; Ethics &nbsp;·&nbsp; Heritage &nbsp;·&nbsp; Film &nbsp;·&nbsp; Education &nbsp;·&nbsp; No Profit–No Loss</p>
+    <div class="hero-btns">
+      <a href="#workshop" class="btn-gold">🎬&nbsp; Upcoming Workshop</a>
+      <a href="#vision" class="btn-outline">Explore Our Vision</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-mouse"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+<div class="film-divider" id="fd1"></div>
+<section id="vision">
+  <div class="container">
+    <div class="vision-grid">
+      <div>
+        <p class="sec-eye reveal">Our Purpose</p>
+        <h2 class="sec-title reveal rd1">Vision &amp; Mission</h2>
+        <div class="gold-accent reveal rd2"></div>
+        <p class="sec-lead reveal rd3">We endeavour to provide <strong style="color:var(--gold2)">meaningful, wholesome, healthy cinema</strong> to the Indian audience — prioritising the promotion of Indian culture, ethics, and national heritage as a powerful alternative to the overemphasis on foreign culture in current films, OTT, and television content.</p>
+        <p class="sec-lead reveal rd4" style="margin-top:16px;">TFFT operates strictly on a <em>no profit – no loss</em> basis. Every rupee raised flows directly into cultural, educational, and social programmes across India.</p>
+        <div style="margin-top:30px;" class="reveal rd5"><a href="#objects" class="btn-gold">See What We Do</a></div>
+      </div>
+      <div class="reveal rd2">
+        <div class="vq-wrap">
+          <div class="corner-tr"></div><div class="corner-bl"></div>
+          <p class="vq">"To set in motion and play a proactive role in giving direction for a quiet social revolution — for socio-economical, cultural, and ethical prosperity — spreading its benefits throughout all living creatures of the world."</p>
+          <p class="vq-attr">— TFFT Trust Deed, September 2022</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="objects">
+  <div class="obj-bg"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <p class="sec-eye reveal">What We Do</p>
+    <h2 class="sec-title reveal rd1">Our Main Objects</h2>
+    <div class="gold-accent reveal rd2"></div>
+    <div class="pillars-grid">
+      <div class="pillar reveal rd1"><span class="pillar-n">01</span><span class="pillar-icon">🎬</span><p class="pillar-name">Film Production &amp; Distribution</p><p class="pillar-text">Produce, exhibit, and distribute cinematographic &amp; television films. Operate studios, OTT platforms, and theatres showcasing culturally enriching content.</p><div class="pillar-bar"></div></div>
+      <div class="pillar reveal rd2"><span class="pillar-n">02</span><span class="pillar-icon">🎓</span><p class="pillar-name">Education &amp; Skill Development</p><p class="pillar-text">Run schools, colleges, vocational training centres, and online cinema education programmes. Provide scholarships and propagate cinematic expertise nationally.</p><div class="pillar-bar"></div></div>
+      <div class="pillar reveal rd3"><span class="pillar-n">03</span><span class="pillar-icon">🎭</span><p class="pillar-name">Cultural Events &amp; Festivals</p><p class="pillar-text">Organise film festivals, art exhibitions, dance events, thematic shows, and award programmes celebrating India's heritage and cultural values.</p><div class="pillar-bar"></div></div>
+      <div class="pillar reveal rd1"><span class="pillar-n">04</span><span class="pillar-icon">📚</span><p class="pillar-name">Publications &amp; Media</p><p class="pillar-text">Publish books, magazines, journals, and newspapers — online and offline — to spread cinematic, cultural, and educational knowledge across India.</p><div class="pillar-bar"></div></div>
+      <div class="pillar reveal rd2"><span class="pillar-n">05</span><span class="pillar-icon">🤝</span><p class="pillar-name">Social Welfare &amp; Relief</p><p class="pillar-text">Provide relief during natural calamities; support rural, tribal, and urban poor communities. Champion human rights and first-generation entrepreneurship.</p><div class="pillar-bar"></div></div>
+      <div class="pillar reveal rd3"><span class="pillar-n">06</span><span class="pillar-icon">🔬</span><p class="pillar-name">Research &amp; Advocacy</p><p class="pillar-text">Undertake socio-scientific research, collaborate with national and international agencies, and advocate for cultural, ethical, and scientific prosperity.</p><div class="pillar-bar"></div></div>
+    </div>
+  </div>
+</section>
+<section id="stats">
+  <div class="stats-row">
+    <div class="stat-item reveal"><p class="stat-n">2022</p><p class="stat-l">Year Established</p></div>
+    <div class="stat-item reveal rd1"><p class="stat-n">6+</p><p class="stat-l">Leadership Trustees</p></div>
+    <div class="stat-item reveal rd2"><p class="stat-n">All India</p><p class="stat-l">Working Territory</p></div>
+    <div class="stat-item reveal rd3"><p class="stat-n">No Profit</p><p class="stat-l">No Loss Operation</p></div>
+    <div class="stat-item reveal rd4"><p class="stat-n">May 2026</p><p class="stat-l">Next Film Workshop</p></div>
+  </div>
+</section>
+<section id="workshop">
+  <div class="ws-bg"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <span class="ws-badge reveal">Live Event</span>
+    <p class="sec-eye reveal rd1">TFFT Presents</p>
+    <h2 class="sec-title reveal rd2">Lens on Orchha</h2>
+    <p class="reveal rd3" style="font-family:var(--fs);font-style:italic;font-size:1.25rem;color:#f5e4a6;margin-bottom:30px;">A 3-Day Immersive Short Film Workshop &nbsp;·&nbsp; Orchha, Jhansi &nbsp;·&nbsp; May 1–3, 2026</p>
+    <div class="ws-grid">
+      <div>
+        <p class="sec-lead reveal">Set against the stunning backdrop of Orchha's forts, Betwa River, and cenotaphs — this immersive workshop transforms aspiring filmmakers into storytellers. By Day 3 every group walks away with a <strong style="color:var(--gold2)">finished short film</strong> in their portfolio, shot in a living heritage landscape.</p>
+        <div class="ws-info reveal rd1">
+          <div class="ws-ii"><span class="ws-ii-icon">📅</span><div><p class="ws-ii-label">Dates</p><p class="ws-ii-val">1 – 3 May 2026</p></div></div>
+          <div class="ws-ii"><span class="ws-ii-icon">📍</span><div><p class="ws-ii-label">Location</p><p class="ws-ii-val">Orchha, Jhansi, Uttar Pradesh</p></div></div>
+          <div class="ws-ii"><span class="ws-ii-icon">👥</span><div><p class="ws-ii-label">Participants</p><p class="ws-ii-val">15–20 &nbsp;·&nbsp; Beginners · Aspiring Filmmakers · College Students</p></div></div>
+          <div class="ws-ii"><span class="ws-ii-icon">🏆</span><div><p class="ws-ii-label">You Take Home</p><p class="ws-ii-val">Certificate + 1 finished short film per group (portfolio-ready)</p></div></div>
+        </div>
+        <div style="margin-top:28px;" class="reveal rd2"><a href="#contact" class="btn-gold">Register Interest</a></div>
+      </div>
+      <div>
+        <div class="day-list">
+          <div class="day-item"><div class="day-spine"><div class="day-dot"></div><div class="day-line"></div></div><div class="day-body"><p class="day-label">Day 1 &nbsp;—&nbsp; 1 May 2026</p><p class="day-title">Foundation &amp; Language of Cinema</p><p class="day-desc">Screenwriting, visual grammar, shot sizes, camera &amp; sound toolkit, location scout &amp; pre-visualisation at Orchha Fort complex.</p></div></div>
+          <div class="day-item"><div class="day-spine"><div class="day-dot"></div><div class="day-line"></div></div><div class="day-body"><p class="day-label">Day 2 &nbsp;—&nbsp; 2 May 2026</p><p class="day-title">The Shoot — Lights, Camera, Action!</p><p class="day-desc">Golden-hour shoots at Riverbank, Fort &amp; Village lanes. Blocking, staging, 180° rule, 3-point lighting, interview setups &amp; B-roll capture.</p></div></div>
+          <div class="day-item"><div class="day-spine"><div class="day-dot"></div></div><div class="day-body"><p class="day-label">Day 3 &nbsp;—&nbsp; 3 May 2026</p><p class="day-title">Post-Production &amp; The Premiere</p><p class="day-desc">DaVinci Resolve editing, colour grading, sound design, festival strategy — culminating in a live premiere screening &amp; certificate distribution.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="film-divider" id="fd2"></div>
+<section id="team">
+  <div class="team-bg"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <p class="sec-eye reveal">The People</p>
+    <h2 class="sec-title reveal rd1">Our Leadership Team</h2>
+    <div class="gold-accent reveal rd2"></div>
+    <div class="team-grid">
+      <div class="member reveal rd1"><div class="m-shine"></div><div class="m-init">PB</div><p class="m-name">Prof. Puneet Bisaria</p><p class="m-role">Settler-cum-President</p><p class="m-bio">Professor, Dean of Arts &amp; Head of Hindi Dept., Bundelkhand University, Jhansi. Founder and driving force of TFFT.</p><p class="m-phone">+91 91299 93645</p><div class="m-bar"></div></div>
+      <div class="member reveal rd2"><div class="m-shine"></div><div class="m-init">DS</div><p class="m-name">Dhirendra Pratap Srivastava</p><p class="m-role">Vice President</p><p class="m-bio">Advocate, Supreme Court of India. Joint Managing Partner, Judicio Legalia. Provides legal stewardship to the trust.</p><p class="m-phone">+91 98104 36677</p><div class="m-bar"></div></div>
+      <div class="member reveal rd3"><div class="m-shine"></div><div class="m-init">SS</div><p class="m-name">Sanjay Sahu</p><p class="m-role">Vice President</p><p class="m-bio">Writer, Film Critic, Poet. General Secretary, Vimal Sahitya Sansthan. Editor, Vishwa Hindi Sabha.</p><p class="m-phone">+91 70004 11482</p><div class="m-bar"></div></div>
+      <div class="member reveal rd1"><div class="m-shine"></div><div class="m-init">AS</div><p class="m-name">Anupam Sahay</p><p class="m-role">Vice President – Finance</p><p class="m-bio">Writer, Film Director, Actor &amp; Theatre Artist. Brings creative vision and financial oversight to TFFT.</p><p class="m-phone">+91 94530 43034</p><div class="m-bar"></div></div>
+      <div class="member reveal rd2"><div class="m-shine"></div><div class="m-init">PS</div><p class="m-name">Prof. Prabhat Kumar Srivastava</p><p class="m-role">Secretary</p><p class="m-bio">Professor &amp; Dean (Industry Relations), Dept. of EEC Engineering, Galgotias University, Noida.</p><p class="m-phone">+91 81785 92028</p><div class="m-bar"></div></div>
+      <div class="member reveal rd3"><div class="m-shine"></div><div class="m-init">SX</div><p class="m-name">Mrs. Sunanda Saxena</p><p class="m-role">Media In-Charge</p><p class="m-bio">Advocate, Indologist, and Translator. Manages all media outreach and public communications for the trust.</p><p class="m-phone">+91 95608 85840</p><div class="m-bar"></div></div>
+    </div>
+  </div>
+</section>
+<section id="contact">
+  <div class="container">
+    <p class="sec-eye reveal">Reach Us</p>
+    <h2 class="sec-title reveal rd1">Get In Touch</h2>
+    <div class="gold-accent reveal rd2"></div>
+    <div class="contact-grid">
+      <div class="ci-list reveal rd2">
+        <div class="ci"><div class="ci-icon">🏛️</div><div><p class="ci-label">Registered Office</p><p class="ci-val">C-64, 3rd Floor, South Extension Part-II<br/>New Delhi – 110049, India</p></div></div>
+        <div class="ci"><div class="ci-icon">📞</div><div><p class="ci-label">President's Office</p><p class="ci-val">Prof. Puneet Bisaria &nbsp;·&nbsp; +91 91299 93645</p></div></div>
+        <div class="ci"><div class="ci-icon">📢</div><div><p class="ci-label">Media Enquiries</p><p class="ci-val">Mrs. Sunanda Saxena &nbsp;·&nbsp; +91 95608 85840</p></div></div>
+        <div class="ci"><div class="ci-icon">🌐</div><div><p class="ci-label">Working Area</p><p class="ci-val">Pan-India — State &amp; District offices as required</p></div></div>
+        <div class="ci"><div class="ci-icon">⚖️</div><div><p class="ci-label">Legal Jurisdiction</p><p class="ci-val">Courts of Delhi, India</p></div></div>
+      </div>
+      <div class="reveal rd3">
+        <div class="cf-wrap">
+          <p class="cf-title">Send a Message</p>
+          <div class="cf-row">
+            <input class="cf-input" type="text" placeholder="Your Name"/>
+            <input class="cf-input" type="email" placeholder="Email Address"/>
+            <input class="cf-input" type="tel" placeholder="Phone Number"/>
+            <select class="cf-input" style="cursor:pointer;"><option value="" disabled selected>Subject / Purpose</option><option>Workshop Registration — Lens on Orchha</option><option>Film Production Collaboration</option><option>Donation / Support</option><option>Membership Enquiry</option><option>Media / Press</option><option>Other</option></select>
+            <textarea class="cf-input" placeholder="Your message..."></textarea>
+            <button class="btn-gold" style="align-self:flex-start;border:none;cursor:pointer;">Send Message &nbsp;→</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="fl-wrap"><img src="assets/logo.jpg" alt="TFFT"/></div>
+  <p class="f-name">THE FILM FOUNDATION TRUST &nbsp;(TFFT)</p>
+  <p class="f-sub">Redefining Cinema &nbsp;·&nbsp; Est. September 2022 &nbsp;·&nbsp; New Delhi, India</p>
+  <div class="f-line"></div>
+  <p class="f-copy">© 2025 The Film Foundation Trust. All activities conducted on a no-profit, no-loss, public charitable basis.</p>
+</footer>
+<script>
+function buildStrip(id){const el=document.getElementById(id);if(!el)return;const n=Math.ceil(window.innerWidth/56)+2;el.innerHTML=Array(n).fill('<div class="film-cell"><div class="film-hole"></div></div>').join('');}
+['fd1','fd2'].forEach(buildStrip);
+window.addEventListener('resize',()=>['fd1','fd2'].forEach(buildStrip),{passive:true});
+const navEl=document.getElementById('nav');
+window.addEventListener('scroll',()=>navEl.classList.toggle('scrolled',scrollY>50),{passive:true});
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>e.isIntersecting&&e.target.classList.add('visible')),{threshold:.1});
+document.querySelectorAll('.reveal,.day-item').forEach(el=>obs.observe(el));
+(function(){
+  const canvas=document.getElementById('three-canvas');
+  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.setClearColor(0,0);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,0.1,2000);
+  camera.position.set(0,0,95);
+  scene.add(new THREE.AmbientLight(0x0d1540,3));
+  const gL=new THREE.PointLight(0xc8a84b,10,350);gL.position.set(40,35,70);scene.add(gL);
+  const gL2=new THREE.PointLight(0xe2c97e,6,220);gL2.position.set(-50,-20,55);scene.add(gL2);
+  const bL=new THREE.PointLight(0x0d1f8e,5,280);bL.position.set(0,-55,45);scene.add(bL);
+  const rL=new THREE.PointLight(0x8b1a2e,3,200);rL.position.set(-30,40,30);scene.add(rL);
+  const gM=new THREE.MeshStandardMaterial({color:0xc8a84b,metalness:.94,roughness:.12,emissive:0x3a2800,emissiveIntensity:.35});
+  const dM=new THREE.MeshStandardMaterial({color:0x0d0500,metalness:.4,roughness:.75});
+  const reel=new THREE.Mesh(new THREE.TorusGeometry(24,2.4,24,100),gM);
+  reel.position.set(-22,6,-18);scene.add(reel);
+  const hub=new THREE.Mesh(new THREE.CylinderGeometry(9,9,2.2,48),gM);
+  hub.rotation.x=Math.PI/2;hub.position.copy(reel.position);hub.position.z+=.5;scene.add(hub);
+  const band=new THREE.Mesh(new THREE.TorusGeometry(26,.9,8,100),dM);
+  band.position.copy(reel.position);scene.add(band);
+  for(let i=0;i<6;i++){const sp=new THREE.Mesh(new THREE.CylinderGeometry(.45,.45,15,8),gM);sp.rotation.z=(i/6)*Math.PI*2;sp.rotation.x=Math.PI/2;sp.position.copy(reel.position);scene.add(sp);}
+  for(let i=0;i<24;i++){const a=(i/24)*Math.PI*2;const hm=new THREE.Mesh(new THREE.BoxGeometry(.6,1.2,.3),new THREE.MeshStandardMaterial({color:0x030a1a,metalness:.2,roughness:.9}));hm.position.set(reel.position.x+Math.cos(a)*26,reel.position.y+Math.sin(a)*26,reel.position.z);hm.rotation.z=a;scene.add(hm);}
+  const reel2=new THREE.Mesh(new THREE.TorusGeometry(14,1.6,20,80),gM);reel2.position.set(30,-14,-28);scene.add(reel2);
+  const hub2=new THREE.Mesh(new THREE.CylinderGeometry(5,5,1.8,32),gM);hub2.rotation.x=Math.PI/2;hub2.position.copy(reel2.position);scene.add(hub2);
+  for(let i=0;i<4;i++){const sp=new THREE.Mesh(new THREE.CylinderGeometry(.35,.35,9,8),gM);sp.rotation.z=(i/4)*Math.PI*2;sp.rotation.x=Math.PI/2;sp.position.copy(reel2.position);scene.add(sp);}
+  const pts=[];for(let i=0;i<200;i++){const t=(i/200)*Math.PI*2;pts.push(new THREE.Vector3(Math.sin(t)*35-5,Math.cos(t)*20+3,Math.sin(t*2)*8-25));}
+  const stripMesh=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true),300,.5,6,true),new THREE.MeshStandardMaterial({color:0x1a0800,metalness:.3,roughness:.85}));scene.add(stripMesh);
+  const cB=new THREE.Mesh(new THREE.BoxGeometry(20,14,1.2),new THREE.MeshStandardMaterial({color:0x0a0f28,metalness:.4,roughness:.7}));cB.position.set(35,28,-8);cB.rotation.z=-.18;scene.add(cB);
+  const cT=new THREE.Mesh(new THREE.BoxGeometry(20,3.5,1.3),new THREE.MeshStandardMaterial({color:0x1a1a00,metalness:.5,roughness:.6}));cT.position.set(35,36,-7.5);cT.rotation.z=-.18;scene.add(cT);
+  for(let i=0;i<5;i++){const s=new THREE.Mesh(new THREE.BoxGeometry(3.5,3.5,.2),new THREE.MeshStandardMaterial({color:i%2===0?0xffd000:0x111111,metalness:.6,roughness:.4}));s.position.set(35-8+i*4,36,-6.8);s.rotation.z=-.18;scene.add(s);}
+  function makeSpot(x,y,z,tx,ty,tz,col){const l=new THREE.SpotLight(col,8,200,Math.PI/9,.4,1.5);l.position.set(x,y,z);l.target.position.set(tx,ty,tz);scene.add(l);scene.add(l.target);return l;}
+  const sL=makeSpot(-30,50,30,0,0,0,0xc8a84b);const sR=makeSpot(30,50,30,0,0,0,0xe2c97e);
+  const N=2200,pos=new Float32Array(N*3),col=new Float32Array(N*3),sz=new Float32Array(N),vel=[],ph=[];
+  const pal=[0xc8a84b,0xe2c97e,0xf5e4a6,0x1a3580,0x0d1f8e,0x4060ff,0xffffff];
+  for(let i=0;i<N;i++){const i3=i*3;pos[i3]=(Math.random()-.5)*380;pos[i3+1]=(Math.random()-.5)*280;pos[i3+2]=(Math.random()-.5)*200-50;vel.push({x:(Math.random()-.5)*.065,y:(Math.random()-.5)*.048,z:(Math.random()-.5)*.032});ph.push(Math.random()*Math.PI*2);sz[i]=Math.random()*2+.4;const c=new THREE.Color(pal[Math.floor(Math.random()*pal.length)]);col[i3]=c.r;col[i3+1]=c.g;col[i3+2]=c.b;}
+  const pG=new THREE.BufferGeometry();pG.setAttribute('position',new THREE.BufferAttribute(pos,3));pG.setAttribute('color',new THREE.BufferAttribute(col,3));pG.setAttribute('size',new THREE.BufferAttribute(sz,1));
+  const pM=new THREE.PointsMaterial({size:1.6,vertexColors:true,transparent:true,opacity:.72,depthWrite:false});scene.add(new THREE.Points(pG,pM));
+  const orbs=[];for(let i=0;i<18;i++){const r=Math.random()*2.2+.5;const o=new THREE.Mesh(new THREE.SphereGeometry(r,16,16),new THREE.MeshStandardMaterial({color:0xc8a84b,metalness:.96,roughness:.07,emissive:0x3a2400,emissiveIntensity:.4,transparent:true,opacity:.65}));o.position.set((Math.random()-.5)*140,(Math.random()-.5)*100,(Math.random()-.5)*70-15);o.userData={vx:(Math.random()-.5)*.14,base:o.position.y,phase:Math.random()*Math.PI*2};scene.add(o);orbs.push(o);}
+  const mN=120,mP=new Float32Array(mN*3),mV=[];for(let i=0;i<mN;i++){mP[i*3]=(Math.random()-.5)*200;mP[i*3+1]=(Math.random()-.5)*150;mP[i*3+2]=(Math.random()-.5)*80-20;mV.push({x:(Math.random()-.5)*.02,y:Math.random()*.03+.01});}
+  const mG=new THREE.BufferGeometry();mG.setAttribute('position',new THREE.BufferAttribute(mP,3));scene.add(new THREE.Points(mG,new THREE.PointsMaterial({size:1.2,color:0xf5e4a6,transparent:true,opacity:.22,depthWrite:false})));
+  let mx=0,my=0,tx=0,ty=0;
+  window.addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-.5)*2;my=(e.clientY/innerHeight-.5)*2;},{passive:true});
+  window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+  let t=0;
+  function animate(){
+    requestAnimationFrame(animate);t+=.008;
+    tx+=(mx-tx)*.038;ty+=(my-ty)*.038;
+    camera.position.x=tx*7;camera.position.y=-ty*5;camera.lookAt(0,0,0);
+    reel.rotation.z+=.005;hub.rotation.z+=.005;band.rotation.z+=.004;reel.position.y=6+Math.sin(t*.75)*1.8;
+    reel2.rotation.z-=.008;hub2.rotation.z-=.008;reel2.position.y=-14+Math.sin(t*.95+1)*1.4;
+    stripMesh.rotation.y+=.002;stripMesh.rotation.x=Math.sin(t*.4)*.06;
+    cB.position.y=28+Math.sin(t*.55)*2.2;cT.position.y=36+Math.sin(t*.55)*2.2;cT.rotation.z=-.18+Math.sin(t*2.8)*.1;
+    for(let i=0;i<N;i++){const i3=i*3;pos[i3]+=vel[i].x;pos[i3+1]+=vel[i].y+Math.sin(t+ph[i])*.013;pos[i3+2]+=vel[i].z;if(pos[i3]>190)pos[i3]=-190;if(pos[i3]<-190)pos[i3]=190;if(pos[i3+1]>140)pos[i3+1]=-140;if(pos[i3+1]<-140)pos[i3+1]=140;}
+    pG.attributes.position.needsUpdate=true;pM.opacity=.62+Math.sin(t*2.1)*.09;
+    for(let i=0;i<mN;i++){mP[i*3]+=mV[i].x;mP[i*3+1]+=mV[i].y;if(mP[i*3+1]>80)mP[i*3+1]=-80;}
+    mG.attributes.position.needsUpdate=true;
+    orbs.forEach(o=>{o.position.x+=o.userData.vx;o.position.y=o.userData.base+Math.sin(t*.6+o.userData.phase)*6;if(o.position.x>75)o.position.x=-75;if(o.position.x<-75)o.position.x=75;});
+    gL.intensity=9+Math.sin(t*1.3)*2;gL2.intensity=5+Math.sin(t*.85+1)*1.5;bL.intensity=4+Math.sin(t*1.1+2)*1;
+    sL.target.position.x=Math.sin(t*.35)*15;sR.target.position.x=Math.sin(t*.35+Math.PI)*15;
+    sL.target.updateMatrixWorld();sR.target.updateMatrixWorld();
+    renderer.render(scene,camera);
+  }
+  animate();
+})();
+</script>
+</body>
+</html>
