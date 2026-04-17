@@ -20,7 +20,7 @@
     body{background:var(--bg0);color:var(--cream);font-family:var(--fb);overflow-x:hidden;}
     ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg0);}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;}
 
-    /* ── NAV ── */
+    /* NAV */
     #nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between;transition:all .4s;border-bottom:1px solid transparent;}
     #nav.scrolled{background:rgba(2,5,16,.95);backdrop-filter:blur(20px);border-bottom-color:var(--gb);}
     .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
@@ -34,28 +34,87 @@
     .nav-cta{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg0)!important;padding:7px 18px;font-weight:600!important;transition:box-shadow .3s,transform .2s!important;}
     .nav-cta:hover{box-shadow:0 4px 20px rgba(200,168,75,.5);transform:translateY(-1px);}
     .nav-cta::after{display:none!important;}
-    /* Event badge in nav */
     .nav-event-dot{display:inline-block;width:6px;height:6px;background:var(--ruby2);border-radius:50%;margin-left:4px;animation:blink 1.4s infinite;vertical-align:middle;}
     @media(max-width:760px){.nav-links{display:none;}#nav{padding:0 16px;}}
 
-    /* ── HERO ── */
+    /* HERO */
     #hero{position:relative;height:100vh;min-height:700px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
     #three-canvas{position:absolute;inset:0;z-index:0;}
     .hero-overlay{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 70% 55% at 50% 40%,rgba(14,21,53,.12),rgba(2,5,16,.80) 100%),linear-gradient(to bottom,rgba(2,5,16,0) 45%,rgba(2,5,16,1) 100%);}
     .hero-content{position:relative;z-index:2;text-align:center;max-width:920px;padding:0 24px;}
     .hero-eyebrow{font-family:var(--fd);font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;opacity:0;animation:hfu .8s .2s forwards ease;}
 
-    /* Animated video logo */
-    .hero-logo-wrap{display:inline-block;margin-bottom:24px;opacity:0;animation:hfu 1s .4s forwards ease;}
-    .hero-logo-video{
-      width:clamp(220px,32vw,380px);
-      height:auto;
-      display:block;
-      border-radius:4px;
-      filter:drop-shadow(0 0 40px rgba(200,168,75,.6)) drop-shadow(0 0 90px rgba(200,168,75,.25));
+    /* ── Hero Logo Seamless ── */
+    .hero-logo-wrap{position:relative;display:inline-block;margin-bottom:28px;opacity:0;animation:hfu 1s .4s forwards ease;}
+
+    /* Ambient glow layer — soft radial behind everything */
+    .hero-logo-glow{
+      position:absolute;inset:-70px;
+      background:radial-gradient(ellipse 65% 65% at 50% 50%,rgba(200,168,75,.18),transparent 72%);
+      pointer-events:none;z-index:0;border-radius:50%;
+      animation:glowPulse 4s ease-in-out infinite;
     }
-    /* Fallback static logo if video fails */
-    .hero-logo-fallback{width:clamp(200px,28vw,320px);height:auto;display:block;filter:drop-shadow(0 0 36px rgba(200,168,75,.55));}
+    @keyframes glowPulse{0%,100%{opacity:.5;transform:scale(1);}50%{opacity:1;transform:scale(1.05);}}
+
+    /* Decorative pulsing gold rings */
+    .hero-logo-ring{
+      position:absolute;inset:-22px;border-radius:50%;
+      border:1px solid rgba(200,168,75,.32);
+      box-shadow:0 0 32px rgba(200,168,75,.20),inset 0 0 32px rgba(200,168,75,.08);
+      pointer-events:none;z-index:3;
+      animation:ringPulse 3.5s ease-in-out infinite;
+    }
+    .hero-logo-ring-2{
+      position:absolute;inset:-42px;border-radius:50%;
+      border:1px solid rgba(200,168,75,.15);
+      pointer-events:none;z-index:3;
+      animation:ringPulse 3.5s 1.2s ease-in-out infinite reverse;
+    }
+    .hero-logo-ring-3{
+      position:absolute;inset:-62px;border-radius:50%;
+      border:1px solid rgba(200,168,75,.07);
+      pointer-events:none;z-index:3;
+      animation:ringPulse 5s 0.6s ease-in-out infinite;
+    }
+    @keyframes ringPulse{0%,100%{opacity:.5;transform:scale(1);}50%{opacity:1;transform:scale(1.02);}}
+
+    /* The video — screen blend removes its dark box completely */
+    .hero-logo-video{
+      position:relative;z-index:1;
+      width:clamp(200px,26vw,320px);
+      height:auto;display:block;
+      mix-blend-mode:screen;
+      filter:
+        drop-shadow(0 0 22px rgba(200,168,75,.8))
+        drop-shadow(0 0 55px rgba(200,168,75,.4))
+        brightness(1.08);
+    }
+
+    /* Vignette — fades rectangular video edges into the bg seamlessly */
+    .hero-logo-vignette{
+      position:absolute;
+      inset:-4px;
+      z-index:2;
+      background:radial-gradient(ellipse 68% 64% at 50% 50%,
+        transparent 28%,
+        rgba(2,5,16,.35) 55%,
+        rgba(2,5,16,.80) 76%,
+        rgba(2,5,16,1) 100%);
+      pointer-events:none;
+    }
+
+    /* Corner accents — subtle gold corners for cinematic framing */
+    .hero-logo-corner{
+      position:absolute;width:18px;height:18px;
+      pointer-events:none;z-index:4;
+    }
+    .hero-logo-corner.tl{top:-8px;left:-8px;border-top:1.5px solid rgba(200,168,75,.6);border-left:1.5px solid rgba(200,168,75,.6);}
+    .hero-logo-corner.tr{top:-8px;right:-8px;border-top:1.5px solid rgba(200,168,75,.6);border-right:1.5px solid rgba(200,168,75,.6);}
+    .hero-logo-corner.bl{bottom:-8px;left:-8px;border-bottom:1.5px solid rgba(200,168,75,.6);border-left:1.5px solid rgba(200,168,75,.6);}
+    .hero-logo-corner.br{bottom:-8px;right:-8px;border-bottom:1.5px solid rgba(200,168,75,.6);border-right:1.5px solid rgba(200,168,75,.6);}
+
+    /* Fallback if video fails */
+    .hero-logo-fallback{position:relative;z-index:1;width:clamp(200px,26vw,320px);height:auto;display:block;mix-blend-mode:screen;filter:drop-shadow(0 0 30px rgba(200,168,75,.7));}
 
     .hero-title{font-family:var(--fDeco);font-size:clamp(1.85rem,4.6vw,3.5rem);font-weight:700;background:linear-gradient(135deg,var(--gold3),var(--gold2) 50%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.05em;line-height:1.18;opacity:0;animation:hfu .9s .6s forwards ease;}
     .hero-hindi{font-family:var(--fs);font-size:clamp(.88rem,1.9vw,1.15rem);font-style:italic;font-weight:300;color:var(--dim);margin-top:9px;opacity:0;animation:hfu .8s .78s forwards ease;}
@@ -72,18 +131,18 @@
     @keyframes sd{0%{opacity:1;top:5px}80%{opacity:0;top:18px}100%{opacity:0;top:5px}}
     @keyframes hfu{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 
-    /* ── BUTTONS ── */
+    /* BUTTONS */
     .btn-gold{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg0);padding:13px 30px;font-family:var(--fd);font-size:.7rem;letter-spacing:.16em;font-weight:600;text-decoration:none;text-transform:uppercase;cursor:pointer;border:none;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:box-shadow .3s,transform .25s;}
     .btn-gold:hover{box-shadow:0 6px 28px rgba(200,168,75,.55);transform:translateY(-2px);}
     .btn-outline{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--gold2);padding:12px 30px;font-family:var(--fd);font-size:.7rem;letter-spacing:.16em;text-decoration:none;text-transform:uppercase;border:1px solid var(--gold);transition:background .3s,box-shadow .3s;}
     .btn-outline:hover{background:rgba(200,168,75,.1);box-shadow:0 0 20px rgba(200,168,75,.18);}
 
-    /* ── FILM DIVIDER ── */
+    /* FILM DIVIDER */
     .film-divider{height:44px;background:#030714;display:flex;align-items:center;overflow:hidden;border-top:2px solid #0e1535;border-bottom:2px solid #0e1535;}
     .film-cell{flex-shrink:0;width:54px;height:44px;border-right:2px solid #0e1535;display:flex;align-items:center;justify-content:center;}
     .film-hole{width:26px;height:18px;border-radius:3px;background:#010309;border:1.5px solid #1a2260;}
 
-    /* ── SHARED SECTION ── */
+    /* SHARED SECTION */
     section{padding:90px 24px;position:relative;}
     .container{max-width:1080px;margin:0 auto;}
     .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
@@ -95,42 +154,18 @@
     .sec-lead{font-size:1.05rem;line-height:1.86;color:var(--dim);max-width:640px;}
     .gold-accent{display:inline-block;width:46px;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold2));margin:14px 0 24px;}
 
-    /* ── TODAY'S EVENT SECTION ── */
+    /* TODAY'S EVENT */
     #todays-event{background:linear-gradient(135deg,#06091f 0%,#0a0e28 50%,#070c20 100%);}
     .event-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(139,26,46,.2),transparent 60%);}
-    .event-live-pill{
-      display:inline-flex;align-items:center;gap:8px;
-      background:linear-gradient(135deg,var(--ruby),var(--ruby2));
-      color:#fff;padding:6px 18px;
-      font-family:var(--fd);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
-      margin-bottom:20px;border-radius:2px;
-    }
+    .event-live-pill{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--ruby),var(--ruby2));color:#fff;padding:6px 18px;font-family:var(--fd);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;margin-bottom:20px;border-radius:2px;}
     .event-live-pill::before{content:'●';font-size:.5rem;animation:blink 1.2s infinite;}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
-    .event-card{
-      background:var(--glass);
-      border:1px solid var(--gb);
-      backdrop-filter:blur(16px);
-      padding:48px 52px;
-      position:relative;
-      overflow:hidden;
-    }
+    .event-card{background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(16px);padding:48px 52px;position:relative;overflow:hidden;}
     .event-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--ruby),var(--gold),var(--ruby));}
     .event-card-corner-tr{position:absolute;top:0;right:0;width:36px;height:36px;border-top:2px solid var(--gold);border-right:2px solid var(--gold);}
     .event-card-corner-bl{position:absolute;bottom:0;left:0;width:36px;height:36px;border-bottom:2px solid var(--gold);border-left:2px solid var(--gold);}
-    .event-title-en{
-      font-family:var(--fDeco);
-      font-size:clamp(1.4rem,3vw,2.2rem);
-      font-weight:700;
-      background:linear-gradient(135deg,var(--gold3),var(--gold2));
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-      line-height:1.2;margin-bottom:6px;
-    }
-    .event-title-hi{
-      font-family:var(--fs);font-size:clamp(1rem,2vw,1.4rem);
-      font-style:italic;color:var(--gold-pale,#f5e4a6);
-      margin-bottom:28px;
-    }
+    .event-title-en{font-family:var(--fDeco);font-size:clamp(1.4rem,3vw,2.2rem);font-weight:700;background:linear-gradient(135deg,var(--gold3),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2;margin-bottom:6px;}
+    .event-title-hi{font-family:var(--fs);font-size:clamp(1rem,2vw,1.4rem);font-style:italic;color:#f5e4a6;margin-bottom:28px;}
     .event-meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;margin:28px 0;border:1px solid rgba(200,168,75,.15);}
     .event-meta-item{padding:18px 22px;border-right:1px solid rgba(200,168,75,.15);}
     .event-meta-item:last-child{border-right:none;}
@@ -139,14 +174,10 @@
     .em-val{font-size:.95rem;color:var(--cream);font-weight:500;line-height:1.5;}
     .event-desc{font-size:.95rem;line-height:1.82;color:var(--dim);margin-top:20px;border-left:2px solid var(--golda);padding-left:20px;}
     .event-orgs{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px;}
-    .event-org-tag{
-      font-family:var(--fd);font-size:.58rem;letter-spacing:.1em;
-      background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.25);
-      color:var(--gold2);padding:5px 14px;
-    }
+    .event-org-tag{font-family:var(--fd);font-size:.58rem;letter-spacing:.1em;background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.25);color:var(--gold2);padding:5px 14px;}
     @media(max-width:720px){.event-card{padding:28px 20px;}}
 
-    /* ── VISION ── */
+    /* VISION */
     #vision{background:linear-gradient(180deg,var(--bg1),var(--bg2));}
     .vision-grid{display:grid;grid-template-columns:1fr 1fr;gap:68px;align-items:center;}
     @media(max-width:768px){.vision-grid{grid-template-columns:1fr;gap:36px;}}
@@ -157,7 +188,7 @@
     .corner-tr{position:absolute;top:0;right:0;width:28px;height:28px;border-top:2px solid var(--gold);border-right:2px solid var(--gold);}
     .corner-bl{position:absolute;bottom:0;left:0;width:28px;height:28px;border-bottom:2px solid var(--gold);border-left:2px solid var(--gold);}
 
-    /* ── PILLARS ── */
+    /* PILLARS */
     #objects{background:var(--bg0);}
     .obj-bg{position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 72% 50%,rgba(200,168,75,.05),transparent 70%);}
     .pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:44px;}
@@ -173,7 +204,7 @@
     .pillar-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);transform:scaleX(0);transform-origin:left;transition:transform .4s;}
     .pillar:hover .pillar-bar{transform:scaleX(1);}
 
-    /* ── STATS ── */
+    /* STATS */
     #stats{padding:0;background:linear-gradient(90deg,#0a0f28,#0e1840 50%,#0a0f28);border-top:1px solid var(--gb);border-bottom:1px solid var(--gb);}
     .stats-row{display:flex;flex-wrap:wrap;}
     .stat-item{flex:1;min-width:140px;padding:40px 24px;text-align:center;border-right:1px solid var(--gb);position:relative;overflow:hidden;}
@@ -183,19 +214,12 @@
     .stat-n{font-family:var(--fDeco);font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,var(--gold3),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
     .stat-l{font-family:var(--fd);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim2);margin-top:7px;}
 
-    /* ── WORKSHOP ── */
+    /* WORKSHOP */
     #workshop{background:var(--bg1);overflow:hidden;}
     .ws-bg{position:absolute;inset:0;background:radial-gradient(ellipse 40% 50% at 90% 20%,rgba(139,26,46,.15),transparent 60%),radial-gradient(ellipse 50% 60% at 10% 80%,rgba(14,21,53,.6),transparent 70%);}
-    /* Proposed badge — amber/orange to signal tentative */
     .ws-badge{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#6b4800,#c98a00);color:white;padding:5px 16px;font-family:var(--fd);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:16px;border-radius:2px;}
     .ws-badge::before{content:'⏳';font-size:.7rem;}
-    .ws-proposed-note{
-      display:inline-flex;align-items:center;gap:8px;
-      background:rgba(201,138,0,.12);border:1px solid rgba(201,138,0,.35);
-      color:#e2b84e;padding:8px 16px;
-      font-family:var(--fd);font-size:.6rem;letter-spacing:.14em;
-      margin-bottom:20px;
-    }
+    .ws-proposed-note{display:inline-flex;align-items:center;gap:8px;background:rgba(201,138,0,.12);border:1px solid rgba(201,138,0,.35);color:#e2b84e;padding:8px 16px;font-family:var(--fd);font-size:.6rem;letter-spacing:.14em;margin-bottom:20px;}
     .ws-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;}
     @media(max-width:768px){.ws-grid{grid-template-columns:1fr;}}
     .ws-info{display:flex;flex-direction:column;gap:12px;margin-top:22px;}
@@ -216,7 +240,7 @@
     .day-title{font-family:var(--fs);font-size:1.08rem;font-weight:600;color:var(--gold3);margin-bottom:5px;}
     .day-desc{font-size:.86rem;line-height:1.72;color:var(--dim);}
 
-    /* ── TEAM ── */
+    /* TEAM */
     #team{background:var(--bg0);}
     .team-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 30% 60%,rgba(14,21,53,.6),transparent 70%);}
     .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:44px;}
@@ -233,7 +257,7 @@
     .m-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--ruby2),transparent);transform:scaleX(0);transform-origin:left;transition:transform .45s;}
     .member:hover .m-bar{transform:scaleX(1);}
 
-    /* ── CONTACT ── */
+    /* CONTACT */
     #contact{background:linear-gradient(180deg,var(--bg1),var(--bg0));}
     .contact-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:60px;}
     @media(max-width:768px){.contact-grid{grid-template-columns:1fr;gap:36px;}}
@@ -252,7 +276,7 @@
     .cf-input::placeholder{color:var(--dim2);}
     textarea.cf-input{resize:vertical;min-height:100px;}
 
-    /* ── FOOTER ── */
+    /* FOOTER */
     footer{background:var(--bg0);border-top:1px solid var(--gb);text-align:center;padding:36px 24px;}
     .fl-wrap{display:inline-block;margin-bottom:14px;filter:drop-shadow(0 0 14px rgba(200,168,75,.28));}
     .fl-wrap img{width:100px;height:auto;}
@@ -261,14 +285,14 @@
     .f-line{width:100%;height:1px;margin:20px 0;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
     .f-copy{font-size:.7rem;color:rgba(245,234,214,.18);}
 
-    /* ── GRAIN ── */
+    /* GRAIN */
     .grain{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.026;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
   </style>
 </head>
 <body>
 <div class="grain"></div>
 
-<!-- ══ NAV ══ -->
+<!-- NAV -->
 <nav id="nav">
   <a href="#" class="nav-logo">
     <img src="assets/logo.jpg" alt="TFFT"/>
@@ -284,24 +308,37 @@
   </div>
 </nav>
 
-<!-- ══ HERO ══ -->
+<!-- HERO -->
 <section id="hero">
   <canvas id="three-canvas"></canvas>
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <p class="hero-eyebrow">Public Charitable Trust &nbsp;·&nbsp; Est. September 2022 &nbsp;·&nbsp; New Delhi, India</p>
 
-    <!-- Animated Logo Video -->
+    <!-- Animated Logo — fully seamless blend -->
     <div class="hero-logo-wrap">
+      <!-- Background ambient glow -->
+      <div class="hero-logo-glow"></div>
+      <!-- Three pulsing decorative rings -->
+      <div class="hero-logo-ring"></div>
+      <div class="hero-logo-ring-2"></div>
+      <div class="hero-logo-ring-3"></div>
+      <!-- Corner accent marks -->
+      <div class="hero-logo-corner tl"></div>
+      <div class="hero-logo-corner tr"></div>
+      <div class="hero-logo-corner bl"></div>
+      <div class="hero-logo-corner br"></div>
+      <!-- The video (mix-blend-mode:screen removes dark background) -->
       <video
         class="hero-logo-video"
         src="Logo_Animation_For_Website.mp4"
         autoplay loop muted playsinline
         poster="assets/logo.jpg"
       >
-        <!-- Fallback to static logo if video unsupported -->
         <img class="hero-logo-fallback" src="assets/logo.jpg" alt="The Film Foundation Trust"/>
       </video>
+      <!-- Radial vignette — fades rectangular edges to transparent -->
+      <div class="hero-logo-vignette"></div>
     </div>
 
     <h1 class="hero-title">The Film Foundation Trust</h1>
@@ -325,7 +362,7 @@
 
 <div class="film-divider" id="fd1"></div>
 
-<!-- ══ TODAY'S EVENT ══ -->
+<!-- TODAY'S EVENT -->
 <section id="todays-event">
   <div class="event-bg"></div>
   <div class="container" style="position:relative;z-index:1;">
@@ -333,38 +370,17 @@
     <p class="sec-eye reveal rd1">TFFT &amp; Partners Present</p>
     <h2 class="sec-title reveal rd2">National Dialogue &amp; Book Launch Ceremony</h2>
     <div class="gold-accent reveal rd3"></div>
-
     <div class="event-card reveal rd2">
       <div class="event-card-corner-tr"></div>
       <div class="event-card-corner-bl"></div>
-
       <p class="event-title-en">Contemporary Cinema's Concerns</p>
       <p class="event-title-hi">समकालीन सिनेमा के सरोकार तथा पुस्तक लोकार्पण समारोह</p>
-
       <div class="event-meta-grid">
-        <div class="event-meta-item">
-          <p class="em-label">📅 Date</p>
-          <p class="em-val">Friday, 17 April 2026</p>
-        </div>
-        <div class="event-meta-item">
-          <p class="em-label">🕐 Time</p>
-          <p class="em-val">1:00 PM onwards</p>
-        </div>
-        <div class="event-meta-item">
-          <p class="em-label">📍 Venue</p>
-          <p class="em-val">Hindi Bhavan, 11 Vishnu Digambar Marg<br/>(Rouse Avenue), Near Bal Bhavan, New Delhi</p>
-        </div>
+        <div class="event-meta-item"><p class="em-label">📅 Date</p><p class="em-val">Friday, 17 April 2026</p></div>
+        <div class="event-meta-item"><p class="em-label">🕐 Time</p><p class="em-val">1:00 PM onwards</p></div>
+        <div class="event-meta-item"><p class="em-label">📍 Venue</p><p class="em-val">Hindi Bhavan, 11 Vishnu Digambar Marg<br/>(Rouse Avenue), Near Bal Bhavan, New Delhi</p></div>
       </div>
-
-      <p class="event-desc">
-        A prestigious <strong style="color:var(--gold2)">National Dialogue and Book Launch Ceremony</strong> is being organised 
-        under the joint auspices of The Film Foundation Trust (New Delhi), Anang Prakashan (Delhi), 
-        Syahi Blue Books (Delhi), Sahitya Unnayan Sansthan (Chandausi), and Bundelkhand Sahitya 
-        Unnayan Samiti (Jhansi). The event brings together scholars, filmmakers, writers, and cultural 
-        leaders for a thoughtful conversation on the relationship between contemporary Indian cinema 
-        and its social responsibilities, accompanied by the launch of significant literary works.
-      </p>
-
+      <p class="event-desc">A prestigious <strong style="color:var(--gold2)">National Dialogue and Book Launch Ceremony</strong> organised under the joint auspices of The Film Foundation Trust (New Delhi), Anang Prakashan (Delhi), Syahi Blue Books (Delhi), Sahitya Unnayan Sansthan (Chandausi), and Bundelkhand Sahitya Unnayan Samiti (Jhansi). The event brings together scholars, filmmakers, writers, and cultural leaders for a thoughtful conversation on the relationship between contemporary Indian cinema and its social responsibilities, accompanied by the launch of significant literary works.</p>
       <div class="event-orgs">
         <span class="event-org-tag">The Film Foundation Trust, New Delhi</span>
         <span class="event-org-tag">Anang Prakashan, Delhi</span>
@@ -376,7 +392,7 @@
   </div>
 </section>
 
-<!-- ══ VISION ══ -->
+<!-- VISION -->
 <section id="vision">
   <div class="container">
     <div class="vision-grid">
@@ -399,7 +415,7 @@
   </div>
 </section>
 
-<!-- ══ OBJECTS ══ -->
+<!-- OBJECTS -->
 <section id="objects">
   <div class="obj-bg"></div>
   <div class="container" style="position:relative;z-index:1;">
@@ -417,7 +433,7 @@
   </div>
 </section>
 
-<!-- ══ STATS ══ -->
+<!-- STATS -->
 <section id="stats">
   <div class="stats-row">
     <div class="stat-item reveal"><p class="stat-n">2022</p><p class="stat-l">Year Established</p></div>
@@ -428,7 +444,7 @@
   </div>
 </section>
 
-<!-- ══ WORKSHOP ══ -->
+<!-- WORKSHOP -->
 <section id="workshop">
   <div class="ws-bg"></div>
   <div class="container" style="position:relative;z-index:1;">
@@ -436,20 +452,12 @@
     <p class="sec-eye reveal rd1">TFFT Plans</p>
     <h2 class="sec-title reveal rd2">Lens on Orchha</h2>
     <p class="reveal rd3" style="font-family:var(--fs);font-style:italic;font-size:1.22rem;color:#f5e4a6;margin-bottom:16px;">A 3-Day Immersive Short Film Workshop &nbsp;·&nbsp; Orchha, Jhansi</p>
-    <div class="ws-proposed-note reveal rd3">
-      ⚠️ &nbsp;The dates below are <strong>proposed and subject to confirmation</strong>. Final schedule will be announced.
-    </div>
+    <div class="ws-proposed-note reveal rd3">⚠️ &nbsp;The dates below are <strong>proposed and subject to confirmation</strong>. Final schedule will be announced.</div>
     <div class="ws-grid">
       <div>
-        <p class="sec-lead reveal">Set against the stunning backdrop of Orchha's forts, Betwa River, and cenotaphs — this immersive workshop is planned to transform aspiring filmmakers into storytellers. By the final day every group is expected to walk away with a <strong style="color:var(--gold2)">finished short film</strong> in their portfolio, shot in a living heritage landscape.</p>
+        <p class="sec-lead reveal">Set against the stunning backdrop of Orchha's forts, Betwa River, and cenotaphs — this immersive workshop is planned to transform aspiring filmmakers into storytellers. By the final day every group is expected to walk away with a <strong style="color:var(--gold2)">finished short film</strong> in their portfolio.</p>
         <div class="ws-info reveal rd1">
-          <div class="ws-ii">
-            <span class="ws-ii-icon">📅</span>
-            <div>
-              <p class="ws-ii-label">Proposed Date</p>
-              <p class="ws-ii-val">3 May 2026 <small>⏳ Tentative — to be confirmed</small></p>
-            </div>
-          </div>
+          <div class="ws-ii"><span class="ws-ii-icon">📅</span><div><p class="ws-ii-label">Proposed Date</p><p class="ws-ii-val">3 May 2026 <small>⏳ Tentative — to be confirmed</small></p></div></div>
           <div class="ws-ii"><span class="ws-ii-icon">📍</span><div><p class="ws-ii-label">Proposed Location</p><p class="ws-ii-val">Orchha, Jhansi, Uttar Pradesh</p></div></div>
           <div class="ws-ii"><span class="ws-ii-icon">👥</span><div><p class="ws-ii-label">Target Participants</p><p class="ws-ii-val">15–20 &nbsp;·&nbsp; Beginners · Aspiring Filmmakers · College Students</p></div></div>
           <div class="ws-ii"><span class="ws-ii-icon">🏆</span><div><p class="ws-ii-label">Expected Outcome</p><p class="ws-ii-val">Certificate + finished short film per group (portfolio-ready)</p></div></div>
@@ -458,30 +466,9 @@
       </div>
       <div>
         <div class="day-list">
-          <div class="day-item">
-            <div class="day-spine"><div class="day-dot"></div><div class="day-line"></div></div>
-            <div class="day-body">
-              <p class="day-label">Day 1 &nbsp;—&nbsp; Proposed</p>
-              <p class="day-title">Foundation &amp; Language of Cinema</p>
-              <p class="day-desc">Screenwriting, visual grammar, shot sizes, camera &amp; sound toolkit, location scout &amp; pre-visualisation at Orchha Fort complex.</p>
-            </div>
-          </div>
-          <div class="day-item">
-            <div class="day-spine"><div class="day-dot"></div><div class="day-line"></div></div>
-            <div class="day-body">
-              <p class="day-label">Day 2 &nbsp;—&nbsp; Proposed</p>
-              <p class="day-title">The Shoot — Lights, Camera, Action!</p>
-              <p class="day-desc">Golden-hour shoots at Riverbank, Fort &amp; Village lanes. Blocking, staging, 180° rule, 3-point lighting, interview setups &amp; B-roll capture.</p>
-            </div>
-          </div>
-          <div class="day-item">
-            <div class="day-spine"><div class="day-dot"></div></div>
-            <div class="day-body">
-              <p class="day-label">Day 3 &nbsp;—&nbsp; 3 May 2026 (Proposed)</p>
-              <p class="day-title">Post-Production &amp; The Premiere</p>
-              <p class="day-desc">DaVinci Resolve editing, colour grading, sound design, festival strategy — culminating in a live premiere screening &amp; certificate distribution.</p>
-            </div>
-          </div>
+          <div class="day-item"><div class="day-spine"><div class="day-dot"></div><div class="day-line"></div></div><div class="day-body"><p class="day-label">Day 1 &nbsp;—&nbsp; Proposed</p><p class="day-title">Foundation &amp; Language of Cinema</p><p class="day-desc">Screenwriting, visual grammar, shot sizes, camera &amp; sound toolkit, location scout &amp; pre-visualisation at Orchha Fort complex.</p></div></div>
+          <div class="day-item"><div class="day-spine"><div class="day-dot"></div><div class="day-line"></div></div><div class="day-body"><p class="day-label">Day 2 &nbsp;—&nbsp; Proposed</p><p class="day-title">The Shoot — Lights, Camera, Action!</p><p class="day-desc">Golden-hour shoots at Riverbank, Fort &amp; Village lanes. Blocking, staging, 180° rule, 3-point lighting, interview setups &amp; B-roll capture.</p></div></div>
+          <div class="day-item"><div class="day-spine"><div class="day-dot"></div></div><div class="day-body"><p class="day-label">Day 3 &nbsp;—&nbsp; 3 May 2026 (Proposed)</p><p class="day-title">Post-Production &amp; The Premiere</p><p class="day-desc">DaVinci Resolve editing, colour grading, sound design, festival strategy — culminating in a live premiere screening &amp; certificate distribution.</p></div></div>
         </div>
       </div>
     </div>
@@ -490,7 +477,7 @@
 
 <div class="film-divider" id="fd2"></div>
 
-<!-- ══ TEAM ══ -->
+<!-- TEAM -->
 <section id="team">
   <div class="team-bg"></div>
   <div class="container" style="position:relative;z-index:1;">
@@ -498,77 +485,17 @@
     <h2 class="sec-title reveal rd1">Our Leadership Team</h2>
     <div class="gold-accent reveal rd2"></div>
     <div class="team-grid">
-
-      <!-- 1. President -->
-      <div class="member reveal rd1">
-        <div class="m-shine"></div>
-        <div class="m-init">PB</div>
-        <p class="m-name">Prof. Puneet Bisaria</p>
-        <p class="m-role">President</p>
-        <p class="m-bio">Professor, Dean of Arts &amp; Head of Hindi Department, Bundelkhand University, Jhansi, UP. Founder and driving force of TFFT.</p>
-        <p class="m-phone">+91 91299 93645</p>
-        <div class="m-bar"></div>
-      </div>
-
-      <!-- 2. VP -->
-      <div class="member reveal rd2">
-        <div class="m-shine"></div>
-        <div class="m-init">DS</div>
-        <p class="m-name">Dhirendra Pratap Srivastava</p>
-        <p class="m-role">Vice President</p>
-        <p class="m-bio">Advocate, Supreme Court of India. Joint Managing Partner, Judicio Legalia (Law Firm). Provides legal stewardship to the trust.</p>
-        <p class="m-phone">+91 98104 36677</p>
-        <div class="m-bar"></div>
-      </div>
-
-      <!-- 3. VP - Dr. Sanjay Anant (updated) -->
-      <div class="member reveal rd3">
-        <div class="m-shine"></div>
-        <div class="m-init">SA</div>
-        <p class="m-name">Dr. Sanjay Anant</p>
-        <p class="m-role">Vice President</p>
-        <p class="m-bio">Scholar, writer, and cultural voice of TFFT. Brings deep expertise in Indian literature and cinema to the trust's mission.</p>
-        <div class="m-bar"></div>
-      </div>
-
-      <!-- 4. VP Finance - Anupam Sahai -->
-      <div class="member reveal rd1">
-        <div class="m-shine"></div>
-        <div class="m-init">AS</div>
-        <p class="m-name">Anupam Sahai</p>
-        <p class="m-role">Vice President — Finance</p>
-        <p class="m-bio">Writer, Film Director, Actor &amp; Theatre Artist. Brings creative vision and financial oversight to TFFT's programmes and productions.</p>
-        <p class="m-phone">+91 94530 43034</p>
-        <div class="m-bar"></div>
-      </div>
-
-      <!-- 5. Secretary - Prof. Prabhat Srivastava -->
-      <div class="member reveal rd2">
-        <div class="m-shine"></div>
-        <div class="m-init">PS</div>
-        <p class="m-name">Prof. Prabhat Srivastava</p>
-        <p class="m-role">Secretary</p>
-        <p class="m-bio">Professor &amp; Dean (Industry Relations), Department of Electrical, Electronics &amp; Communication Engineering, Galgotias University, Noida.</p>
-        <p class="m-phone">+91 81785 92028</p>
-        <div class="m-bar"></div>
-      </div>
-
-      <!-- 6. Media Incharge - Smt. Sunanda Saxena -->
-      <div class="member reveal rd3">
-        <div class="m-shine"></div>
-        <div class="m-init">SX</div>
-        <p class="m-name">Smt. Sunanda Saxena</p>
-        <p class="m-role">Media Incharge</p>
-        <p class="m-bio">Advocate, Indologist, and Translator. Manages all media outreach, communications, and public relations for the trust.</p>
-        <p class="m-phone">+91 95608 85840</p>
-        <div class="m-bar"></div>
-      </div>
-
+      <div class="member reveal rd1"><div class="m-shine"></div><div class="m-init">PB</div><p class="m-name">Prof. Puneet Bisaria</p><p class="m-role">President</p><p class="m-bio">Professor, Dean of Arts &amp; Head of Hindi Department, Bundelkhand University, Jhansi, UP. Founder and driving force of TFFT.</p><p class="m-phone">+91 91299 93645</p><div class="m-bar"></div></div>
+      <div class="member reveal rd2"><div class="m-shine"></div><div class="m-init">DS</div><p class="m-name">Dhirendra Pratap Srivastava</p><p class="m-role">Vice President</p><p class="m-bio">Advocate, Supreme Court of India. Joint Managing Partner, Judicio Legalia (Law Firm). Provides legal stewardship to the trust.</p><p class="m-phone">+91 98104 36677</p><div class="m-bar"></div></div>
+      <div class="member reveal rd3"><div class="m-shine"></div><div class="m-init">SA</div><p class="m-name">Dr. Sanjay Anant</p><p class="m-role">Vice President</p><p class="m-bio">Scholar, writer, and cultural voice of TFFT. Brings deep expertise in Indian literature and cinema to the trust's mission.</p><div class="m-bar"></div></div>
+      <div class="member reveal rd1"><div class="m-shine"></div><div class="m-init">AS</div><p class="m-name">Anupam Sahai</p><p class="m-role">Vice President — Finance</p><p class="m-bio">Writer, Film Director, Actor &amp; Theatre Artist. Brings creative vision and financial oversight to TFFT's programmes and productions.</p><p class="m-phone">+91 94530 43034</p><div class="m-bar"></div></div>
+      <div class="member reveal rd2"><div class="m-shine"></div><div class="m-init">PS</div><p class="m-name">Prof. Prabhat Srivastava</p><p class="m-role">Secretary</p><p class="m-bio">Professor &amp; Dean (Industry Relations), Department of Electrical, Electronics &amp; Communication Engineering, Galgotias University, Noida.</p><p class="m-phone">+91 81785 92028</p><div class="m-bar"></div></div>
+      <div class="member reveal rd3"><div class="m-shine"></div><div class="m-init">SX</div><p class="m-name">Smt. Sunanda Saxena</p><p class="m-role">Media Incharge</p><p class="m-bio">Advocate, Indologist, and Translator. Manages all media outreach, communications, and public relations for the trust.</p><p class="m-phone">+91 95608 85840</p><div class="m-bar"></div></div>
     </div>
   </div>
 </section>
 
-<!-- ══ CONTACT ══ -->
+<!-- CONTACT -->
 <section id="contact">
   <div class="container">
     <p class="sec-eye reveal">Reach Us</p>
@@ -609,7 +536,7 @@
   </div>
 </section>
 
-<!-- ══ FOOTER ══ -->
+<!-- FOOTER -->
 <footer>
   <div class="fl-wrap"><img src="assets/logo.jpg" alt="TFFT"/></div>
   <p class="f-name">THE FILM FOUNDATION TRUST &nbsp;(TFFT)</p>
@@ -619,20 +546,14 @@
 </footer>
 
 <script>
-/* Film strips */
 function buildStrip(id){const el=document.getElementById(id);if(!el)return;const n=Math.ceil(window.innerWidth/56)+2;el.innerHTML=Array(n).fill('<div class="film-cell"><div class="film-hole"></div></div>').join('');}
 ['fd1','fd2'].forEach(buildStrip);
 window.addEventListener('resize',()=>['fd1','fd2'].forEach(buildStrip),{passive:true});
-
-/* Nav scroll */
 const navEl=document.getElementById('nav');
 window.addEventListener('scroll',()=>navEl.classList.toggle('scrolled',scrollY>50),{passive:true});
-
-/* Reveal observer */
 const obs=new IntersectionObserver(entries=>entries.forEach(e=>e.isIntersecting&&e.target.classList.add('visible')),{threshold:.08});
 document.querySelectorAll('.reveal,.day-item').forEach(el=>obs.observe(el));
-
-/* Video fallback — if video can't play, show img */
+/* Video fallback */
 (function(){
   const vid=document.querySelector('.hero-logo-video');
   if(!vid)return;
@@ -641,10 +562,7 @@ document.querySelectorAll('.reveal,.day-item').forEach(el=>obs.observe(el));
     if(wrap){wrap.innerHTML='<img class="hero-logo-fallback" src="assets/logo.jpg" alt="TFFT"/>';}
   });
 })();
-
-/* ═══════════════════════════════════════════
-   THREE.JS — Continuous 3D Physics Animation
-═══════════════════════════════════════════ */
+/* THREE.JS */
 (function(){
   const canvas=document.getElementById('three-canvas');
   const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
@@ -661,12 +579,9 @@ document.querySelectorAll('.reveal,.day-item').forEach(el=>obs.observe(el));
   const rL=new THREE.PointLight(0x8b1a2e,3,200);rL.position.set(-30,40,30);scene.add(rL);
   const gM=new THREE.MeshStandardMaterial({color:0xc8a84b,metalness:.94,roughness:.12,emissive:0x3a2800,emissiveIntensity:.35});
   const dM=new THREE.MeshStandardMaterial({color:0x0d0500,metalness:.4,roughness:.75});
-  const reel=new THREE.Mesh(new THREE.TorusGeometry(24,2.4,24,100),gM);
-  reel.position.set(-22,6,-18);scene.add(reel);
-  const hub=new THREE.Mesh(new THREE.CylinderGeometry(9,9,2.2,48),gM);
-  hub.rotation.x=Math.PI/2;hub.position.copy(reel.position);hub.position.z+=.5;scene.add(hub);
-  const band=new THREE.Mesh(new THREE.TorusGeometry(26,.9,8,100),dM);
-  band.position.copy(reel.position);scene.add(band);
+  const reel=new THREE.Mesh(new THREE.TorusGeometry(24,2.4,24,100),gM);reel.position.set(-22,6,-18);scene.add(reel);
+  const hub=new THREE.Mesh(new THREE.CylinderGeometry(9,9,2.2,48),gM);hub.rotation.x=Math.PI/2;hub.position.copy(reel.position);hub.position.z+=.5;scene.add(hub);
+  const band=new THREE.Mesh(new THREE.TorusGeometry(26,.9,8,100),dM);band.position.copy(reel.position);scene.add(band);
   for(let i=0;i<6;i++){const sp=new THREE.Mesh(new THREE.CylinderGeometry(.45,.45,15,8),gM);sp.rotation.z=(i/6)*Math.PI*2;sp.rotation.x=Math.PI/2;sp.position.copy(reel.position);scene.add(sp);}
   for(let i=0;i<24;i++){const a=(i/24)*Math.PI*2;const hm=new THREE.Mesh(new THREE.BoxGeometry(.6,1.2,.3),new THREE.MeshStandardMaterial({color:0x030a1a,metalness:.2,roughness:.9}));hm.position.set(reel.position.x+Math.cos(a)*26,reel.position.y+Math.sin(a)*26,reel.position.z);hm.rotation.z=a;scene.add(hm);}
   const reel2=new THREE.Mesh(new THREE.TorusGeometry(14,1.6,20,80),gM);reel2.position.set(30,-14,-28);scene.add(reel2);
